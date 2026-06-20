@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "wellness_buddy_flutter",
+            "cwd": "${workspaceFolder}/wellness_buddy_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "wellness_buddy_server",
+            "cwd": "${workspaceFolder}/wellness_buddy_server",
+            "request": "launch",
+            "type": "dart",
+            "preLaunchTask": "docker_compose_up",
+            "program": "bin/main.dart",
+            "env": {
+                "SERVERPOD_PASSWORD_database": "CPNYU4GSWXkLZ8LxzluhDxfr2JCoOycF"
+            },
+            "args": [
+                "--apply-migrations"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "wellness_buddy (full stack)",
+            "configurations": [
+                "wellness_buddy_server",
+                "wellness_buddy_flutter"
+            ],
+            "presentation": {
+                "order": 1
+            }
+        }
+    ]
+}

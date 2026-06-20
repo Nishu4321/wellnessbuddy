@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: wellness_buddy
+      POSTGRES_PASSWORD: "CPNYU4GSWXkLZ8LxzluhDxfr2JCoOycF"
+    volumes:
+      - wellness_buddy_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "3BBIJuthB0Ll8Wkz2RrsG4sNYqHSLNCq"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: wellness_buddy_test
+      POSTGRES_PASSWORD: "YDNVBNtzt8JWi4yKqxOh2xerDvJL-4Ou"
+    volumes:
+      - wellness_buddy_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "D-4eCXzpXXc7vuQm4D3Hnjk_VuqOvfMu"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  wellness_buddy_data:
+  wellness_buddy_test_data:

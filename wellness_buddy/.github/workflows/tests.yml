@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: '3.4.8'
+      SERVERPOD_PASSWORD_database: 'YDNVBNtzt8JWi4yKqxOh2xerDvJL-4Ou'
+      SERVERPOD_PASSWORD_redis: 'D-4eCXzpXXc7vuQm4D3Hnjk_VuqOvfMu'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.8'
+
+      - name: Start containers
+        working-directory: wellness_buddy_server
+        run: docker compose up --quiet-pull --quiet-build --build -d
+
+      - name: Install dependencies
+        working-directory: wellness_buddy_server
+        run: dart pub get
+
+      - name: Install Serverpod CLI
+        working-directory: wellness_buddy_server
+        run: dart pub global activate serverpod_cli $VERSION
+
+      - name: Run Serverpod generator
+        working-directory: wellness_buddy_server
+        run: serverpod generate
+
+      - name: Run tests
+        working-directory: wellness_buddy_server
+        run: dart test
+
+      - name: Stop containers
+        if: always()
+        working-directory: wellness_buddy_server
+        run: docker compose down -v

@@ -1,0 +1,7 @@
+class: StressTrigger
+fields:
+  trigger: String
+  category: String
+  severity: int
+  evidence: String
+  explanation: String

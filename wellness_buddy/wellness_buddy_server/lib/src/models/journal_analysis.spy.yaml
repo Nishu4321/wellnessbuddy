@@ -1,0 +1,3 @@
+class: JournalAnalysis
+fields:
+  triggers: List<StressTrigger>

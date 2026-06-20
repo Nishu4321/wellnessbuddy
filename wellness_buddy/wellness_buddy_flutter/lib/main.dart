@@ -1,33 +1,35 @@
 import 'package:wellness_buddy_client/wellness_buddy_client.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
-import 'screens/greetings_screen.dart';
+import 'screens/home_screen.dart';
 
-/// Sets up a global client object that can be used to talk to the server from
-/// anywhere in our app. The client is generated from your server code
-/// and is set up to connect to a Serverpod running on a local server on
-/// the default port. You will need to modify this to connect to staging or
-/// production servers.
-/// In a larger app, you may want to use the dependency injection of your choice
-/// instead of using a global client object. This is just a simple example.
+/// Global Serverpod client
 late final Client client;
 
-late String serverUrl;
+// ──────────────────────────────────────────────
+//  Aara Color Palette
+// ──────────────────────────────────────────────
+class AaraColors {
+  // Brand palette
+  static const iceCold      = Color(0xFFa0d2eb); // #a0d2eb — highlights, links
+  static const freezePurple = Color(0xFFe5eaf5); // #e5eaf5 — light text, chips
+  static const medPurple    = Color(0xFFd0bdf4); // #d0bdf4 — secondary text
+  static const purplePain   = Color(0xFF8458B3); // #8458B3 — primary accent
+  static const heavyPurple  = Color(0xFFa28089); // #a28089 — muted text
+
+  // Dark backgrounds (derived from palette)
+  static const bg           = Color(0xFF080C14); // near-black, ice-tinted
+  static const surface      = Color(0xFF101520); // card background
+  static const border       = Color(0xFF1E2A3A); // subtle borders
+  static const hintText     = Color(0xFF2A3850); // placeholder text
+  static const labelText    = Color(0xFF4A6070); // section labels
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // When you are running the app on a physical device, you need to set the
-  // server URL to the IP address of your computer. You can find the IP
-  // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
-  //
-  // You can set the variable when running or building your app like this:
-  // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`.
-  //
-  // Otherwise, the server URL is fetched from the assets/config.json file or
-  // defaults to http://$localhost:8080/ if not found.
   final serverUrl = await getServerUrl();
 
   client = Client(serverUrl)
@@ -36,44 +38,87 @@ void main() async {
 
   client.auth.initialize();
 
-  runApp(const MyApp());
+  runApp(const AaraApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AaraApp extends StatelessWidget {
+  const AaraApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Serverpod Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Serverpod Example'),
+      title: 'Aara — Student Wellness',
+      debugShowCheckedModeBanner: false,
+      theme: _buildTheme(),
+      home: const HomeScreen(),
     );
   }
-}
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: const GreetingsScreen(),
-      // To test authentication in this example app, uncomment the line below
-      // and comment out the line above. This wraps the GreetingsScreen with a
-      // SignInScreen, which automatically shows a sign-in UI when the user is
-      // not authenticated and displays the GreetingsScreen once they sign in.
-      //
-      // body: SignInScreen(
-      //   child: GreetingsScreen(
-      //     onSignOut: () async {
-      //       await client.auth.signOutDevice();
-      //     },
-      //   ),
-      // ),
+  ThemeData _buildTheme() {
+    final base = ThemeData.dark();
+    return base.copyWith(
+      scaffoldBackgroundColor: AaraColors.bg,
+      colorScheme: const ColorScheme.dark(
+        primary: AaraColors.purplePain,
+        secondary: AaraColors.iceCold,
+        surface: AaraColors.surface,
+        onPrimary: Colors.white,
+        onSurface: AaraColors.freezePurple,
+      ),
+      textTheme: GoogleFonts.nunitoTextTheme(base.textTheme).apply(
+        bodyColor: AaraColors.freezePurple,
+        displayColor: Colors.white,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: AaraColors.bg,
+        elevation: 0,
+        centerTitle: false,
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: GoogleFonts.nunito(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AaraColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AaraColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AaraColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AaraColors.iceCold, width: 1.5),
+        ),
+        hintStyle: GoogleFonts.nunito(color: AaraColors.hintText),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AaraColors.purplePain,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          textStyle: GoogleFonts.nunito(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: AaraColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AaraColors.border),
+        ),
+        elevation: 0,
+      ),
     );
   }
 }
